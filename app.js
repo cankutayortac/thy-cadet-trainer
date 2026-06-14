@@ -226,10 +226,313 @@ const commCards = [
   },
 ];
 
-const state = {
-  order: "sequence",
-  index: 0,
-  cards: [...commCards],
+const checklistGroups = [
+  {
+    id: "normal",
+    name: "Normal Procedures",
+    shortName: "Normal",
+    description: "C-172S normal checklist flow from before start to securing airplane.",
+    sections: [
+      section("before-start", "Before Starting Engine", "Ground preparation", [
+        item("Preflight Inspection", "COMPLETE"),
+        item("Passenger Briefing", "COMPLETE"),
+        item("Seats and Seat Belts", "ADJUST and LOCK", "Verify inertia reel locking."),
+        item("Brakes", "TEST and SET"),
+        item("Circuit Breakers", "CHECK IN"),
+        item("Electrical Equipment", "OFF"),
+        item("AVIONICS Switch (BUS 1 and BUS 2)", "OFF"),
+        item("FUEL SELECTOR Valve", "BOTH"),
+        item("FUEL SHUTOFF Valve", "ON", "Push full in."),
+      ]),
+      section("start-engine", "Starting Engine (With Battery)", "Start sequence", [
+        item("Throttle Control", "OPEN 1/4 INCH"),
+        item("Mixture Control", "IDLE CUTOFF", "Pull full out."),
+        item("STBY BATT Switch - TEST", "HOLD for 10 seconds", "Verify green TEST lamp does not go off."),
+        item("STBY BATT Switch - ARM", "ARM", "Verify that PFD comes on."),
+        item("Engine Indicating System", "CHECK PARAMETERS", "Verify no red X's through ENGINE page indicators."),
+        item("BUS E Volts", "CHECK", "Verify 24 VOLTS minimum shown."),
+        item("M BUS Volts", "CHECK", "Verify 1.5 VOLTS or less shown."),
+        item("BATT S Amps", "CHECK", "Verify discharge shown negative."),
+        item("STBY BATT Annunciator", "CHECK"),
+        item("START UP CLEARANCE", "REQUEST"),
+        item("Propeller Area", "CLEAR"),
+        item("MASTER Switch (ALT and BAT)", "ON"),
+        item("BEACON Light Switch", "ON"),
+        item("FUEL PUMP Switch", "ON"),
+        item("Mixture Control", "SET to FULL RICH then IDLE CUTOFF", "Until stable fuel flow is indicated, then set to idle cutoff."),
+        item("FUEL PUMP Switch", "OFF"),
+        item("MAGNETOS Switch", "START", "Release when engine starts."),
+        item("Mixture Control", "ADVANCE SMOOTHLY TO RICH", "When engine starts."),
+        item("Oil Pressure", "CHECK", "Oil pressure should increase into the green band in 30 to 60 seconds."),
+        item("AMPS (M BATT and BATT S)", "CHECK", "Verify charge shown positive."),
+        item("LOW VOLTS Annunciator", "CHECK", "Verify annunciator is not shown."),
+        item("NAV Light Switch", "ON", "As required."),
+        item("AVIONICS Switch (BUS 1 and BUS 2)", "ON"),
+        item("HEADSET and RADIO", "CHECK"),
+      ]),
+      section("before-takeoff", "Before Takeoff", "Run-up and configuration", [
+        item("Parking Brake", "SET"),
+        item("Pilot and Passenger Seat Backs", "MOST UPRIGHT POSITION"),
+        item("Seats and Seat Belts", "CHECK SECURE"),
+        item("Cabin Doors", "CLOSED and LOCKED"),
+        item("Flight Controls (PFD)", "FREE and CORRECT"),
+        item("FLAPS", "CHECK Full Travel"),
+        item("WING FLAPS", "UP - 10°", "10° preferred."),
+        item("Flight Instruments (PFD)", "CHECK", "No red X's."),
+        item("ALTIMETERS - PFD (BARO)", "SET"),
+        item("ALTIMETERS - Standby Altimeter", "SET"),
+        item("ALT SEL", "SET"),
+        item("Standby Flight Instruments", "CHECK"),
+        item("Fuel Quantity", "CHECK"),
+        item("Mixture Control", "RICH"),
+        item("FUEL SELECTOR Valve", "SET BOTH"),
+        item("Autopilot", "ENGAGE", "If installed."),
+        item("Flight Controls", "CHECK", "Verify autopilot can be overpowered in pitch and roll."),
+        item("A/P TRIM DISC Button", "PRESS", "Verify autopilot disengages and aural alert is heard."),
+        item("Flight Director", "OFF", "If installed."),
+        item("Elevator Trim Control", "SET FOR TAKEOFF"),
+        item("Cylinder Head Temperature (CHT)", "CHECK", "All above 200°F."),
+        item("Throttle Control", "1800 RPM"),
+        item("MAGNETOS Switch", "CHECK", "RPM drop should not exceed 175 RPM on either magneto or 50 RPM differential."),
+        item("VAC Indicator", "CHECK", "If installed."),
+        item("Engine Indicators", "CHECK"),
+        item("Ammeters and Voltmeters", "CHECK"),
+        item("Alternator", "CHECK", "All lights and Pitot Heat ON; volts should show between 27 and 29."),
+        item("Annunciators", "CHECK", "Verify no annunciators are shown."),
+        item("Throttle Control", "CHECK IDLE"),
+        item("Throttle Control", "1000 RPM or LESS"),
+        item("Throttle Control Friction Lock", "ADJUST"),
+        item("COM Frequency(s)", "SET"),
+        item("NAV Frequency(s)", "SET"),
+        item("FMS/GPS Flight Plan", "AS DESIRED"),
+        item("XPDR", "SET"),
+        item("CDI Softkey", "SELECT NAV source"),
+        item("CABIN PWR 12V Switch", "OFF", "If installed."),
+        item("Wing Flaps", "UP - 10°", "10° preferred."),
+        item("TAKEOFF BRIEFING", "PERFORM"),
+        item("TAXI CLEARANCE", "REQUEST"),
+        item("TAXI Light Switch", "ON"),
+        item("Brakes", "RELEASE"),
+      ]),
+      section("below-line", "Below The Line", "Line-up items", [
+        item("LINE UP CLEARANCE", "OBTAIN"),
+        item("Cabin Windows", "CLOSED and LOCKED"),
+        item("ALL Light Switches", "ON"),
+        item("Brakes", "RELEASE"),
+      ]),
+      section("normal-takeoff", "Normal Takeoff", "Takeoff roll and climb", [
+        item("Wing Flaps", "UP - 10°", "10° preferred."),
+        item("Throttle Control", "FULL", "Push full in."),
+        item("Mixture Control", "RICH", "Above 3000 ft pressure altitude, lean for maximum RPM."),
+        item("Elevator Control", "LIFT NOSEWHEEL AT 55 KIAS"),
+        item("Brakes", "APPLY", "When positive climb."),
+        item("Throttle Control Friction Lock", "LOCK"),
+        item("Climb Airspeed", "70 - 80 KIAS"),
+        item("Wing Flaps", "RETRACT", "At safe altitude."),
+        item("Elevator Trim Control", "ADJUST"),
+        item("Land Light Switch", "OFF"),
+      ]),
+      section("enroute-climb", "Enroute Climb", "Climb checks", [
+        item("Airspeed", "70 - 85 KIAS"),
+        item("Throttle Control", "FULL", "In green arc."),
+        item("Mixture Control", "RICH", "Above 3000 ft pressure altitude, lean for maximum RPM."),
+      ]),
+      section("cruise", "Cruise", "Cruise setup", [
+        item("Power", "2100 - 2700 RPM", "No more than 75% power recommended."),
+        item("Elevator Trim Control", "ADJUST"),
+        item("Mixture Control", "LEAN", "For desired performance or economy."),
+        item("FMS/GPS", "REVIEW and BRIEF"),
+      ]),
+      section("descent", "Descent", "Arrival setup", [
+        item("Power", "AS DESIRED"),
+        item("Mixture", "ADJUST", "If necessary to make engine run smoothly."),
+        item("Altimeters - PFD (BARO)", "SET"),
+        item("Altimeters - Standby Altimeter", "SET"),
+        item("ALT SEL", "SET"),
+        item("CDI Softkey", "SELECT NAV SOURCE"),
+        item("FMS/GPS", "REVIEW and BRIEF"),
+        item("FUEL SELECTOR Valve", "BOTH"),
+        item("Wing Flaps", "AS DESIRED", "UP-10° below 110 KIAS; 10°-FULL below 85 KIAS."),
+      ]),
+      section("before-landing", "Before Landing", "Final configuration", [
+        item("Pilot and Passenger Seat Backs", "MOST UPRIGHT POSITION"),
+        item("Seats and Seat Belts", "SECURED and LOCKED"),
+        item("FUEL SELECTOR Valve", "BOTH"),
+        item("Mixture Control", "RICH"),
+        item("LAND and TAXI Light Switches", "ON"),
+        item("Autopilot", "OFF", "If installed."),
+        item("CABIN PWR 12V Switch", "OFF", "If installed."),
+      ]),
+      section("normal-landing", "Normal Landing", "Landing profile", [
+        item("Airspeed", "65 - 75 KIAS", "Flaps UP."),
+        item("Wing Flaps", "AS DESIRED", "UP-10° below 110 KIAS; 10°-FULL below 85 KIAS."),
+        item("Airspeed", "60 - 70 KIAS", "Flaps FULL."),
+        item("Elevator Trim Control", "ADJUST"),
+        item("Touchdown", "MAIN WHEELS FIRST"),
+        item("Landing Roll", "LOWER NOSEWHEEL GENTLY"),
+        item("Braking", "MINIMUM REQUIRED"),
+      ]),
+      section("after-landing", "After Landing", "Clear of runway", [
+        item("Elevator Trim Control", "SET for TAKEOFF"),
+        item("STROBE and LAND Light Switches", "OFF"),
+        item("TAXI Light Switch", "AS DESIRED"),
+        item("PITOT HEAT", "OFF"),
+      ]),
+      section("securing", "Securing Airplane", "Shutdown and parking", [
+        item("Parking Brake", "SET"),
+        item("TAXI Light Switch", "OFF"),
+        item("Throttle Control", "1800 RPM", "For 15 to 20 sec."),
+        item("Electrical Equipment", "OFF"),
+        item("ADF", "OFF", "If installed."),
+        item("NAV Light Switch", "OFF"),
+        item("AVIONICS Switch (BUS 1 and BUS 2)", "OFF"),
+        item("Throttle Control", "1000 - 1200 RPM"),
+        item("Mixture Control", "IDLE CUTOFF"),
+        item("MAGNETOS Switch", "OFF"),
+        item("KEY", "REMOVE"),
+        item("BEACON Light Switch", "OFF"),
+        item("MASTER Switch (ALT and BAT)", "OFF"),
+        item("ENG Hours & Remaining FUEL", "NOTED"),
+        item("STBY BATT Switch", "OFF"),
+        item("Control Lock", "INSTALL"),
+        item("FUEL SELECTOR Valve", "LEFT or RIGHT", "To prevent crossfeeding between tanks."),
+      ]),
+    ],
+  },
+  {
+    id: "preflight",
+    name: "Preflight Inspection",
+    shortName: "Preflight",
+    description: "Cabin and walkaround inspection flow before the normal checklist.",
+    sections: [
+      section("preflight-cockpit", "Cockpit / Documents", "Preflight inspection", [
+        item("Pitot Tube Cover", "REMOVE", "Check for pitot blockage."),
+        item("Pilot's Operating Handbook", "ACCESSIBLE TO PILOT"),
+        item("G1000 Reference Guide", "ACCESSIBLE TO PILOT"),
+        item("Airplane Weight-Balance", "CHECKED"),
+        item("Parking Brake", "SET"),
+        item("Control Wheel Lock", "REMOVE"),
+        item("Magnetos Switch", "OFF"),
+        item("Avionics Switch (BUS 1-2)", "OFF"),
+        item("Master Switch (ALT-BAT)", "ON"),
+        item("Primary Flight Display", "CHECK", "Verify PFD is ON."),
+        item("Fuel Quantity (L-R)", "CHECK"),
+        item("Low Fuel Annunciator", "CHECK", "Verify not shown on PFD."),
+        item("Oil Pressure Annunciator", "CHECK", "Verify annunciator is shown."),
+        item("Low Vacuum Annunciator", "CHECK", "Verify annunciator is shown."),
+        item("Avionics Switch (BUS 1)", "ON"),
+        item("Forward Avionics Fan", "CHECK", "Verify fan is heard."),
+        item("Avionics Switch (BUS 1)", "OFF"),
+        item("Avionics Switch (BUS 2)", "ON"),
+        item("Aft Avionics Fan", "CHECK", "Verify fan is heard."),
+        item("Avionics Switch (BUS 2)", "OFF"),
+        item("Pitot Heat Switch", "ON", "Warm within 30 seconds."),
+        item("Pitot Heat Switch", "OFF"),
+        item("Low Volts Annunciator", "CHECK", "Verify annunciator is shown."),
+        item("Master Switch (ALT-BAT)", "OFF"),
+        item("Elevator Trim Control", "TAKEOFF position"),
+        item("Fuel Selector Valve", "BOTH"),
+        item("Alt Static Air Valve", "OFF", "Push full in."),
+        item("Fire Extinguisher", "CHECK", "Verify in green arc."),
+      ]),
+      section("cabin", "Cabin", "Walkaround station", [
+        item("Baggage Compartment Door", "CHECK", "Lock with key."),
+        item("Rudder Gust Lock", "REMOVE", "If installed."),
+        item("Tail Tiedown", "DISCONNECT"),
+        item("Control Surfaces", "CHECK", "Movement and security."),
+        item("Elevator Trim Tab", "CHECK", "Security."),
+        item("Antennas", "CHECK", "Attachment and condition."),
+      ]),
+      section("empennage", "Empennage", "Walkaround station", [
+        item("Aileron", "CHECK", "Movement and security."),
+        item("Flap", "CHECK", "Security and condition."),
+      ]),
+      section("right-wing-trailing", "Right Wing Trailing Edge", "Walkaround station", [
+        item("Wing Tiedown", "DISCONNECT"),
+        item("Main Wheel Tire", "CHECK"),
+        item("Fuel Tank Quick Drain Valves", "DRAIN"),
+        item("Fuel Quantity", "CHECK VISUALLY"),
+        item("Fuel Filler Cap", "SECURE and VENT CLEAR"),
+      ]),
+      section("right-wing", "Right Wing", "Walkaround station", [
+        item("Engine Oil Dipstick/Filler Cap - Oil Level", "CHECK"),
+        item("Engine Oil Dipstick/Filler Cap", "SECURE"),
+        item("Propeller and Spinner", "CHECK", "For nicks and security."),
+        item("Engine Cooling Air Inlets", "CHECK", "Clear of obstructions."),
+        item("Air Filter", "CHECK", "Dust, foreign matter."),
+        item("Nosewheel Strut and Tire", "CHECK"),
+        item("Fuel Strainer Quick Drain Valve", "DRAIN"),
+        item("Static Source Opening", "CHECK", "Verify opening is clear."),
+      ]),
+      section("nose", "Nose", "Walkaround station", [
+        item("Fuel Tank Vent Opening", "CHECK", "Blockage."),
+        item("Stall Warning Opening", "CHECK", "Blockage."),
+        item("Landing/Taxi Light", "CHECK"),
+      ]),
+      section("left-wing-leading", "Left Wing Leading Edge", "Walkaround station", [
+        item("Wing Tiedown", "DISCONNECT"),
+        item("Main Wheel Tire", "CHECK"),
+        item("Fuel Tank Quick Drain Valves", "DRAIN"),
+        item("Fuel Quantity", "CHECK VISUALLY"),
+        item("Fuel Filler Cap", "SECURE and VENT CLEAR"),
+      ]),
+      section("left-wing", "Left Wing", "Walkaround station", [
+        item("Aileron", "CHECK", "Movement and security."),
+        item("Flap", "CHECK", "Security and condition."),
+      ]),
+      section("left-wing-trailing", "Left Wing Trailing Edge", "Walkaround station", [
+        item("Safety Reminder", "SAFETY FIRST REMEMBER HATS"),
+      ]),
+    ],
+  },
+  {
+    id: "vital",
+    name: "Vital Checks",
+    shortName: "Vital",
+    description: "Holding point vital checks from the training notes.",
+    sections: [
+      section("holding-point-vital", "Hayati Kontroller (Holding Point)", "Memory scan", [
+        item("Seat Backs", "MOST UPRIGHT / DİK"),
+        item("Seat Belts", "SECURED / BAĞLI"),
+        item("Cabin Doors and Windows", "CLOSED / KAPALI"),
+        item("Fuel Selector", "BOTH"),
+        item("Fuel Shutoff", "ON / IN"),
+        item("Trim", "TAKEOFF POSITION"),
+        item("Flaps", "10"),
+        item("Mixture", "RICH"),
+        item("Magnetos", "BOTH"),
+        item("Master", "ON"),
+        item("Avionics", "ON"),
+        item("Standby Battery", "ARM"),
+        item("Engine", "ALL GREEN"),
+        item("HSI, Compass, Turn Coordinator", "NORMAL"),
+        item("Base Legs", "CLEAR / TEMİZ"),
+        item("Final Approach", "CLEAR / TEMİZ"),
+        item("Runway", "IDENTIFIED"),
+        item("Heading Bug", "SET"),
+      ]),
+    ],
+  },
+];
+
+const modeLabels = {
+  review: "Review cards",
+  fill: "Fill responses",
+  order: "Order drill",
+};
+
+const appState = {
+  view: "home",
+  selectedHomeMode: "comm",
+  commOrder: "sequence",
+  commIndex: 0,
+  commCards: [...commCards],
+  checklistMode: "review",
+  checklistGroupId: "normal",
+  checklistSectionId: "before-start",
+  checklistIndex: 0,
+  orderSelected: [],
+  orderOptions: [],
 };
 
 const els = {};
@@ -237,16 +540,27 @@ const els = {};
 document.addEventListener("DOMContentLoaded", () => {
   bindElements();
   bindEvents();
-  render();
+  renderAll();
 });
+
+function section(id, title, phase, items) {
+  return { id, title, phase, items };
+}
+
+function item(challenge, response, note = "") {
+  return { challenge, response, note };
+}
 
 function bindElements() {
   Object.assign(els, {
     homeView: document.querySelector("#homeView"),
-    trainerView: document.querySelector("#trainerView"),
+    commView: document.querySelector("#commView"),
+    checklistHubView: document.querySelector("#checklistHubView"),
+    checklistPracticeView: document.querySelector("#checklistPracticeView"),
     progressPill: document.querySelector("#progressPill"),
-    startComm: document.querySelector("#startComm"),
-    backHome: document.querySelector("#backHome"),
+    modeCards: document.querySelectorAll(".mode-card"),
+    startSelectedMode: document.querySelector("#startSelectedMode"),
+    homeButtons: document.querySelectorAll("[data-home]"),
     orderButtons: document.querySelectorAll("[data-order]"),
     cardCategory: document.querySelector("#cardCategory"),
     cardTitle: document.querySelector("#cardTitle"),
@@ -263,91 +577,204 @@ function bindElements() {
     prevCard: document.querySelector("#prevCard"),
     nextCard: document.querySelector("#nextCard"),
     resetCard: document.querySelector("#resetCard"),
+    checklistModeSelect: document.querySelector("#checklistModeSelect"),
+    checklistGroupSelect: document.querySelector("#checklistGroupSelect"),
+    checklistSectionGrid: document.querySelector("#checklistSectionGrid"),
+    backChecklistHub: document.querySelector("#backChecklistHub"),
+    checklistPracticeMode: document.querySelector("#checklistPracticeMode"),
+    checklistPracticeTitle: document.querySelector("#checklistPracticeTitle"),
+    checklistGroupLabel: document.querySelector("#checklistGroupLabel"),
+    checklistStepTitle: document.querySelector("#checklistStepTitle"),
+    checklistCounter: document.querySelector("#checklistCounter"),
+    checklistReviewPanel: document.querySelector("#checklistReviewPanel"),
+    checklistChallenge: document.querySelector("#checklistChallenge"),
+    checklistResponse: document.querySelector("#checklistResponse"),
+    checklistNote: document.querySelector("#checklistNote"),
+    checklistFillPanel: document.querySelector("#checklistFillPanel"),
+    fillChallenge: document.querySelector("#fillChallenge"),
+    checklistAnswerInput: document.querySelector("#checklistAnswerInput"),
+    showChecklistAnswer: document.querySelector("#showChecklistAnswer"),
+    checkChecklistAnswer: document.querySelector("#checkChecklistAnswer"),
+    checklistFeedback: document.querySelector("#checklistFeedback"),
+    checklistReferenceAnswer: document.querySelector("#checklistReferenceAnswer"),
+    checklistAnswerText: document.querySelector("#checklistAnswerText"),
+    orderDrillPanel: document.querySelector("#orderDrillPanel"),
+    orderTargets: document.querySelector("#orderTargets"),
+    orderOptions: document.querySelector("#orderOptions"),
+    orderFeedback: document.querySelector("#orderFeedback"),
+    resetOrderDrill: document.querySelector("#resetOrderDrill"),
+    prevChecklistStep: document.querySelector("#prevChecklistStep"),
+    resetChecklistStep: document.querySelector("#resetChecklistStep"),
+    nextChecklistStep: document.querySelector("#nextChecklistStep"),
   });
 }
 
 function bindEvents() {
-  els.startComm.addEventListener("click", () => showTrainer());
-  els.backHome.addEventListener("click", () => showHome());
-  els.showAnswer.addEventListener("click", revealAnswer);
-  els.checkAnswer.addEventListener("click", checkAnswer);
-  els.prevCard.addEventListener("click", () => moveCard(-1));
-  els.nextCard.addEventListener("click", () => moveCard(1));
-  els.resetCard.addEventListener("click", clearAttempt);
+  els.modeCards.forEach((card) => {
+    if (card.classList.contains("disabled")) return;
+    card.addEventListener("click", () => {
+      appState.selectedHomeMode = card.dataset.mode;
+      renderHome();
+    });
+  });
+
+  els.startSelectedMode.addEventListener("click", () => {
+    if (appState.selectedHomeMode === "checklist") {
+      showChecklistHub();
+      return;
+    }
+    showComm();
+  });
+
+  els.homeButtons.forEach((button) => button.addEventListener("click", showHome));
+  els.showAnswer.addEventListener("click", revealCommAnswer);
+  els.checkAnswer.addEventListener("click", checkCommAnswer);
+  els.prevCard.addEventListener("click", () => moveCommCard(-1));
+  els.nextCard.addEventListener("click", () => moveCommCard(1));
+  els.resetCard.addEventListener("click", clearCommAttempt);
   els.answerInput.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) checkAnswer();
+    if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) checkCommAnswer();
   });
 
   els.orderButtons.forEach((button) => {
     button.addEventListener("click", () => {
-      state.order = button.dataset.order;
-      state.cards = state.order === "shuffle" ? shuffle(commCards) : [...commCards];
-      state.index = 0;
-      els.orderButtons.forEach((item) => item.classList.toggle("active", item === button));
-      render();
+      appState.commOrder = button.dataset.order;
+      appState.commCards = appState.commOrder === "shuffle" ? shuffle(commCards) : [...commCards];
+      appState.commIndex = 0;
+      renderComm();
       els.answerInput.focus();
     });
   });
+
+  els.checklistModeSelect.addEventListener("change", () => {
+    appState.checklistMode = els.checklistModeSelect.value;
+    renderChecklistHub();
+  });
+  els.checklistGroupSelect.addEventListener("change", () => {
+    appState.checklistGroupId = els.checklistGroupSelect.value;
+    appState.checklistSectionId = getCurrentGroup().sections[0].id;
+    renderChecklistHub();
+  });
+  els.backChecklistHub.addEventListener("click", showChecklistHub);
+  els.prevChecklistStep.addEventListener("click", () => moveChecklistStep(-1));
+  els.nextChecklistStep.addEventListener("click", () => moveChecklistStep(1));
+  els.resetChecklistStep.addEventListener("click", resetChecklistPractice);
+  els.showChecklistAnswer.addEventListener("click", revealChecklistAnswer);
+  els.checkChecklistAnswer.addEventListener("click", checkChecklistAnswer);
+  els.checklistAnswerInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") checkChecklistAnswer();
+  });
+  els.resetOrderDrill.addEventListener("click", resetOrderDrill);
 }
 
-function showTrainer() {
-  els.homeView.classList.remove("active");
-  els.trainerView.classList.add("active");
-  render();
-  window.setTimeout(() => els.answerInput.focus(), 0);
+function renderAll() {
+  renderHome();
+  renderComm();
+  renderChecklistHub();
 }
 
 function showHome() {
-  els.trainerView.classList.remove("active");
-  els.homeView.classList.add("active");
+  appState.view = "home";
+  setActiveView("home");
+  renderHome();
 }
 
-function render() {
-  const card = state.cards[state.index];
-  els.progressPill.textContent = `${state.index + 1} / ${state.cards.length}`;
-  els.cardCounter.textContent = `${state.index + 1} / ${state.cards.length}`;
+function showComm() {
+  appState.view = "comm";
+  setActiveView("comm");
+  renderComm();
+  window.setTimeout(() => els.answerInput.focus(), 0);
+}
+
+function showChecklistHub() {
+  appState.view = "checklistHub";
+  setActiveView("checklistHub");
+  renderChecklistHub();
+}
+
+function showChecklistPractice(sectionId) {
+  appState.view = "checklistPractice";
+  appState.checklistSectionId = sectionId;
+  appState.checklistIndex = 0;
+  resetOrderState();
+  setActiveView("checklistPractice");
+  renderChecklistPractice();
+}
+
+function setActiveView(view) {
+  els.homeView.classList.toggle("active", view === "home");
+  els.commView.classList.toggle("active", view === "comm");
+  els.checklistHubView.classList.toggle("active", view === "checklistHub");
+  els.checklistPracticeView.classList.toggle("active", view === "checklistPractice");
+}
+
+function renderHome() {
+  els.modeCards.forEach((card) => {
+    card.classList.toggle("active", card.dataset.mode === appState.selectedHomeMode);
+  });
+  els.startSelectedMode.textContent =
+    appState.selectedHomeMode === "checklist" ? "Open Checklist Trainer" : "Start Comm practice";
+  if (appState.view === "home") {
+    els.progressPill.textContent = appState.selectedHomeMode === "checklist"
+      ? `${getChecklistItemCount()} items`
+      : `${commCards.length} cards`;
+  }
+}
+
+function renderComm() {
+  const card = appState.commCards[appState.commIndex];
+  if (!card) return;
+
+  els.orderButtons.forEach((button) => {
+    button.classList.toggle("active", button.dataset.order === appState.commOrder);
+  });
+  if (appState.view === "comm") {
+    els.progressPill.textContent = `${appState.commIndex + 1} / ${appState.commCards.length}`;
+  }
+  els.cardCounter.textContent = `${appState.commIndex + 1} / ${appState.commCards.length}`;
   els.cardCategory.textContent = card.category;
   els.cardTitle.textContent = card.title;
   els.aircraftPrompt.textContent = card.aircraft;
   els.situationPrompt.textContent = card.situation;
   els.atcPrompt.textContent = card.atc || "";
   els.answerText.textContent = card.answer;
-  els.prevCard.disabled = state.index === 0;
-  els.nextCard.disabled = state.index === state.cards.length - 1;
-  clearAttempt();
+  els.prevCard.disabled = appState.commIndex === 0;
+  els.nextCard.disabled = appState.commIndex === appState.commCards.length - 1;
+  clearCommAttempt();
 }
 
-function moveCard(direction) {
-  const nextIndex = state.index + direction;
-  if (nextIndex < 0 || nextIndex >= state.cards.length) return;
-  state.index = nextIndex;
-  render();
+function moveCommCard(direction) {
+  const nextIndex = appState.commIndex + direction;
+  if (nextIndex < 0 || nextIndex >= appState.commCards.length) return;
+  appState.commIndex = nextIndex;
+  renderComm();
   els.answerInput.focus();
 }
 
-function clearAttempt() {
+function clearCommAttempt() {
   els.answerInput.value = "";
   els.referenceAnswer.hidden = true;
   els.feedback.textContent = "";
   els.feedback.className = "feedback";
 }
 
-function revealAnswer() {
+function revealCommAnswer() {
   els.referenceAnswer.hidden = false;
 }
 
-function checkAnswer() {
-  const card = state.cards[state.index];
+function checkCommAnswer() {
+  const card = appState.commCards[appState.commIndex];
   const typed = normalize(els.answerInput.value);
-  const acceptedAnswers = getAcceptedAnswers(card).map(normalize);
+  const acceptedAnswers = getAcceptedCommAnswers(card).map(normalize);
 
   if (!typed) {
-    showFeedback("Type the pilot response first.", "miss");
+    showFeedback(els.feedback, "Type the pilot response first.", "miss");
     return;
   }
 
   if (acceptedAnswers.some(requiresShortCallsign) && typed.includes("tc jzb")) {
     showFeedback(
+      els.feedback,
       "Try again. ATC shortened the callsign to JZB, so the pilot response should also use JZB instead of TC-JZB.",
       "miss"
     );
@@ -355,26 +782,223 @@ function checkAnswer() {
   }
 
   if (acceptedAnswers.some((answer) => answer.includes("affirm")) && !typed.includes("affirm")) {
-    showFeedback(
-      "Try again. The guide requires the acknowledgement word 'affirm' in this response.",
-      "miss"
-    );
+    showFeedback(els.feedback, "Try again. The guide requires the acknowledgement word 'affirm' in this response.", "miss");
     return;
   }
 
   const score = Math.max(...acceptedAnswers.map((answer) => similarity(typed, answer)));
   if (score >= 0.92) {
-    showFeedback("Very good. This is very close to the guide line.", "good");
+    showFeedback(els.feedback, "Very good. This is very close to the guide line.", "good");
     return;
   }
   if (score >= 0.72) {
-    showFeedback("Close. Check the callsign, aerodrome, RWY, frequency, and numbers one by one.", "near");
+    showFeedback(els.feedback, "Close. Check the callsign, aerodrome, RWY, frequency, and numbers one by one.", "near");
     return;
   }
-  showFeedback("Try again. You can show the answer and type the same line once more.", "miss");
+  showFeedback(els.feedback, "Try again. You can show the answer and type the same line once more.", "miss");
 }
 
-function getAcceptedAnswers(card) {
+function renderChecklistHub() {
+  const group = getCurrentGroup();
+  els.checklistModeSelect.value = appState.checklistMode;
+  els.checklistGroupSelect.innerHTML = checklistGroups
+    .map((item) => `<option value="${item.id}">${escapeHtml(item.name)}</option>`)
+    .join("");
+  els.checklistGroupSelect.value = appState.checklistGroupId;
+  if (appState.view === "checklistHub") {
+    els.progressPill.textContent = `${getChecklistItemCount(group)} items`;
+  }
+  els.checklistSectionGrid.innerHTML = group.sections
+    .map((sectionData) => {
+      const itemCount = sectionData.items.length;
+      return `
+        <button class="checklist-section-card" type="button" data-section-id="${sectionData.id}">
+          <span>${escapeHtml(group.shortName)}</span>
+          <strong>${escapeHtml(sectionData.title)}</strong>
+          <small>${escapeHtml(sectionData.phase)} · ${itemCount} items</small>
+        </button>
+      `;
+    })
+    .join("");
+  els.checklistSectionGrid.querySelectorAll("[data-section-id]").forEach((button) => {
+    button.addEventListener("click", () => showChecklistPractice(button.dataset.sectionId));
+  });
+}
+
+function renderChecklistPractice() {
+  const group = getCurrentGroup();
+  const sectionData = getCurrentSection();
+  const mode = appState.checklistMode;
+  const items = sectionData.items;
+  const currentItem = items[appState.checklistIndex] || items[0];
+
+  if (appState.view === "checklistPractice") {
+    els.progressPill.textContent = mode === "order"
+      ? `${appState.orderSelected.length} / ${items.length}`
+      : `${appState.checklistIndex + 1} / ${items.length}`;
+  }
+  els.checklistPracticeMode.textContent = modeLabels[mode];
+  els.checklistPracticeTitle.textContent = sectionData.title;
+  els.checklistGroupLabel.textContent = group.name;
+  els.checklistCounter.textContent = mode === "order"
+    ? `${appState.orderSelected.length} / ${items.length}`
+    : `${appState.checklistIndex + 1} / ${items.length}`;
+
+  els.checklistReviewPanel.hidden = mode !== "review";
+  els.checklistFillPanel.hidden = mode !== "fill";
+  els.orderDrillPanel.hidden = mode !== "order";
+  els.prevChecklistStep.disabled = mode === "order" || appState.checklistIndex === 0;
+  els.nextChecklistStep.disabled = mode === "order" || appState.checklistIndex === items.length - 1;
+
+  if (mode === "review") {
+    els.checklistStepTitle.textContent = currentItem.challenge;
+    els.checklistChallenge.textContent = currentItem.challenge;
+    els.checklistResponse.textContent = currentItem.response;
+    els.checklistNote.textContent = currentItem.note || "";
+    return;
+  }
+
+  if (mode === "fill") {
+    els.checklistStepTitle.textContent = currentItem.challenge;
+    els.fillChallenge.textContent = currentItem.challenge;
+    els.checklistAnswerText.textContent = currentItem.response;
+    clearChecklistAnswer();
+    window.setTimeout(() => els.checklistAnswerInput.focus(), 0);
+    return;
+  }
+
+  renderOrderDrill();
+}
+
+function moveChecklistStep(direction) {
+  const items = getCurrentSection().items;
+  const nextIndex = appState.checklistIndex + direction;
+  if (nextIndex < 0 || nextIndex >= items.length) return;
+  appState.checklistIndex = nextIndex;
+  renderChecklistPractice();
+}
+
+function resetChecklistPractice() {
+  if (appState.checklistMode === "order") {
+    resetOrderDrill();
+    return;
+  }
+  if (appState.checklistMode === "fill") {
+    clearChecklistAnswer();
+    els.checklistAnswerInput.focus();
+  }
+}
+
+function clearChecklistAnswer() {
+  els.checklistAnswerInput.value = "";
+  els.checklistReferenceAnswer.hidden = true;
+  els.checklistFeedback.textContent = "";
+  els.checklistFeedback.className = "feedback";
+}
+
+function revealChecklistAnswer() {
+  els.checklistReferenceAnswer.hidden = false;
+}
+
+function checkChecklistAnswer() {
+  const itemData = getCurrentSection().items[appState.checklistIndex];
+  const typed = normalize(els.checklistAnswerInput.value);
+  const expected = normalize(itemData.response);
+
+  if (!typed) {
+    showFeedback(els.checklistFeedback, "Type the response first.", "miss");
+    return;
+  }
+
+  const score = similarity(typed, expected);
+  if (score >= 0.88 || expected.includes(typed) || typed.includes(expected)) {
+    showFeedback(els.checklistFeedback, "Correct. Keep the challenge-response rhythm.", "good");
+    return;
+  }
+
+  if (score >= 0.62) {
+    showFeedback(els.checklistFeedback, "Close. Check the exact action word and any numbers/positions.", "near");
+    return;
+  }
+
+  showFeedback(els.checklistFeedback, "Try again, then show the answer if needed.", "miss");
+}
+
+function renderOrderDrill() {
+  const sectionData = getCurrentSection();
+  if (!appState.orderOptions.length) resetOrderState();
+  els.checklistStepTitle.textContent = sectionData.title;
+  els.orderTargets.innerHTML = sectionData.items
+    .map((itemData, index) => {
+      const selected = appState.orderSelected[index];
+      return `
+        <div class="order-target ${selected ? "filled" : ""}">
+          <span>${index + 1}</span>
+          <p>${selected ? escapeHtml(selected.challenge) : "..."}</p>
+        </div>
+      `;
+    })
+    .join("");
+  els.orderOptions.innerHTML = appState.orderOptions
+    .filter((option) => !appState.orderSelected.includes(option))
+    .map((option) => {
+      const optionIndex = sectionData.items.indexOf(option);
+      return `<button type="button" data-order-option-index="${optionIndex}">${escapeHtml(option.challenge)}</button>`;
+    })
+    .join("");
+  els.orderOptions.querySelectorAll("[data-order-option-index]").forEach((button) => {
+    const option = sectionData.items[Number(button.dataset.orderOptionIndex)];
+    button.addEventListener("click", () => chooseOrderOption(option));
+  });
+}
+
+function chooseOrderOption(option) {
+  const items = getCurrentSection().items;
+  const expected = items[appState.orderSelected.length];
+  if (option !== expected) {
+    showFeedback(els.orderFeedback, `Not yet. The next item should be "${expected.challenge}". Reset and try the flow again.`, "miss");
+    return;
+  }
+
+  appState.orderSelected.push(option);
+  if (appState.orderSelected.length === items.length) {
+    showFeedback(els.orderFeedback, "Complete. You have the sequence in order.", "good");
+  } else {
+    showFeedback(els.orderFeedback, "Good. Continue with the next item.", "good");
+  }
+  renderChecklistPractice();
+}
+
+function resetOrderDrill() {
+  resetOrderState();
+  els.orderFeedback.textContent = "";
+  els.orderFeedback.className = "feedback";
+  renderChecklistPractice();
+}
+
+function resetOrderState() {
+  const items = getCurrentSection().items;
+  appState.orderSelected = [];
+  appState.orderOptions = shuffle(items);
+}
+
+function getCurrentGroup() {
+  return checklistGroups.find((group) => group.id === appState.checklistGroupId) || checklistGroups[0];
+}
+
+function getCurrentSection() {
+  const group = getCurrentGroup();
+  return group.sections.find((sectionData) => sectionData.id === appState.checklistSectionId) || group.sections[0];
+}
+
+function getChecklistItemCount(group = null) {
+  const groups = group ? [group] : checklistGroups;
+  return groups.reduce((total, groupData) => {
+    return total + groupData.sections.reduce((sectionTotal, sectionData) => sectionTotal + sectionData.items.length, 0);
+  }, 0);
+}
+
+function getAcceptedCommAnswers(card) {
   const answers = new Set([card.answer]);
   addPhraseOrderVariants(answers);
   addSlashVariants(answers);
@@ -415,9 +1039,9 @@ function requiresShortCallsign(normalizedAnswer) {
   return normalizedAnswer.includes("jzb") && !normalizedAnswer.includes("tc jzb");
 }
 
-function showFeedback(message, type) {
-  els.feedback.textContent = message;
-  els.feedback.className = `feedback show ${type}`;
+function showFeedback(element, message, type) {
+  element.textContent = message;
+  element.className = `feedback show ${type}`;
 }
 
 function normalize(value) {
@@ -446,10 +1070,7 @@ function levenshtein(a, b) {
     row[0] = i;
     for (let j = 1; j <= b.length; j += 1) {
       const temp = row[j];
-      row[j] =
-        a[i - 1] === b[j - 1]
-          ? prev
-          : Math.min(prev + 1, row[j] + 1, row[j - 1] + 1);
+      row[j] = a[i - 1] === b[j - 1] ? prev : Math.min(prev + 1, row[j] + 1, row[j - 1] + 1);
       prev = temp;
     }
   }
@@ -463,4 +1084,13 @@ function shuffle(items) {
     [next[i], next[j]] = [next[j], next[i]];
   }
   return next;
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }

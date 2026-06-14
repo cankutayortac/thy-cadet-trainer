@@ -31,7 +31,9 @@ body {
 }
 
 button,
-textarea {
+textarea,
+select,
+input {
   font: inherit;
 }
 
@@ -249,6 +251,23 @@ h2 {
   background: var(--brand-dark);
 }
 
+select,
+.answer-input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+  color: var(--ink);
+}
+
+select:focus,
+.answer-input:focus {
+  outline: 3px solid rgba(199, 10, 12, 0.16);
+  border-color: rgba(199, 10, 12, 0.72);
+}
+
 .secondary-action,
 .ghost-button {
   padding: 0 16px;
@@ -286,6 +305,78 @@ h2 {
 
 .trainer-topline {
   margin-bottom: 16px;
+}
+
+.hub-title {
+  min-width: 0;
+  text-align: right;
+}
+
+.hub-title h2 {
+  font-size: clamp(1.18rem, 2.5vw, 1.72rem);
+}
+
+.checklist-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.checklist-toolbar label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.checklist-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.checklist-section-card {
+  display: grid;
+  min-height: 140px;
+  padding: 15px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  text-align: left;
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.08);
+  transition: transform 160ms ease, border-color 160ms ease;
+}
+
+.checklist-section-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(199, 10, 12, 0.45);
+}
+
+.checklist-section-card span {
+  justify-self: start;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: var(--black);
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.checklist-section-card strong {
+  align-self: end;
+  margin-top: 22px;
+  font-size: 1.05rem;
+}
+
+.checklist-section-card small {
+  color: var(--muted);
+  font-weight: 750;
+  line-height: 1.35;
 }
 
 .practice-card {
@@ -394,6 +485,94 @@ textarea:focus {
   margin-top: 12px;
 }
 
+.checklist-review,
+.checklist-fill,
+.order-drill {
+  margin-top: 18px;
+}
+
+.checklist-review {
+  display: grid;
+  gap: 10px;
+}
+
+.note-text {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  font-weight: 750;
+  line-height: 1.45;
+}
+
+.checklist-fill .answer-input {
+  min-height: 52px;
+  font-size: 1.06rem;
+  font-weight: 850;
+}
+
+.order-drill {
+  display: grid;
+  gap: 12px;
+}
+
+.order-targets,
+.order-options {
+  display: grid;
+  gap: 8px;
+}
+
+.order-target {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  min-height: 45px;
+  overflow: hidden;
+  border: 1px dashed #cfcfcf;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.order-target.filled {
+  border-style: solid;
+  border-color: rgba(199, 10, 12, 0.28);
+  background: #fff7f7;
+}
+
+.order-target span {
+  display: grid;
+  align-self: stretch;
+  place-items: center;
+  background: var(--black);
+  color: white;
+  font-weight: 950;
+}
+
+.order-target p {
+  margin: 0;
+  padding: 8px 10px;
+  font-weight: 850;
+  line-height: 1.3;
+}
+
+.order-options {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.order-options button {
+  min-height: 44px;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+  color: var(--ink);
+  font-weight: 850;
+  text-align: left;
+}
+
+.order-options button:hover {
+  border-color: rgba(199, 10, 12, 0.45);
+}
+
 .feedback {
   display: none;
   margin-top: 14px;
@@ -483,6 +662,10 @@ footer strong {
     flex-direction: row;
   }
 
+  .hub-title {
+    text-align: right;
+  }
+
   .app-header > div:first-child {
     max-width: 100%;
   }
@@ -494,7 +677,29 @@ footer strong {
   }
 
   .mode-grid {
+    grid-template-columns: 1fr;
     gap: 9px;
+  }
+
+  .checklist-toolbar {
+    grid-template-columns: 1fr;
+    gap: 9px;
+    margin-bottom: 10px;
+  }
+
+  .checklist-grid {
+    grid-template-columns: 1fr;
+    gap: 9px;
+  }
+
+  .checklist-section-card {
+    min-height: auto;
+    padding: 12px;
+  }
+
+  .checklist-section-card strong {
+    margin-top: 10px;
+    font-size: 1rem;
   }
 
   .mode-card {
@@ -601,6 +806,11 @@ footer strong {
     font-size: 1rem;
   }
 
+  .checklist-fill .answer-input {
+    min-height: 46px;
+    font-size: 1rem;
+  }
+
   .actions-row {
     gap: 8px;
   }
@@ -621,6 +831,20 @@ footer strong {
   .navigation-row .primary-action {
     min-width: 0;
     padding: 0 8px;
+  }
+
+  .order-options {
+    grid-template-columns: 1fr;
+  }
+
+  .order-target {
+    grid-template-columns: 30px minmax(0, 1fr);
+    min-height: 40px;
+  }
+
+  .order-target p,
+  .order-options button {
+    font-size: 0.9rem;
   }
 
   footer {

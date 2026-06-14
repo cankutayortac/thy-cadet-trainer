@@ -2,7 +2,12 @@
 
 Simple study app for ATC comm, checklist, and bold item practice.
 
-This first version starts with the Comm module. Comm cards are prepared from the lines in `Thy check list - sayfa 3.pdf`; the app does not generate questions outside the guide.
+The app currently includes:
+
+- ATC Comm practice from the provided communication guide.
+- Checklist practice for C-172S normal procedures, preflight inspection, and vital checks.
+
+Emergency and bold item material is intentionally kept out of the Checklist module and will be added separately.
 
 ## Run
 
