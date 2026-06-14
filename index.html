@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f4f0e8" />
+    <title>THY Cadet Trainer</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">THY Cadet Pilot Study</p>
+          <h1>ATC Comm Trainer</h1>
+        </div>
+        <div class="status-pill" id="progressPill">0 / 0</div>
+      </header>
+
+      <main>
+        <section class="home-view active" id="homeView" aria-label="Study selection">
+          <div class="section-heading">
+            <p class="eyebrow">What do you want to practice?</p>
+            <h2>Select study mode</h2>
+          </div>
+
+          <div class="mode-grid">
+            <button class="mode-card active" type="button" data-mode="comm">
+              <span class="mode-icon" aria-hidden="true">ATC</span>
+              <strong>Comm</strong>
+              <small>Read the situation and ATC line, then type the pilot response.</small>
+            </button>
+            <button class="mode-card disabled" type="button" data-mode="checklist" aria-disabled="true">
+              <span class="mode-icon" aria-hidden="true">CL</span>
+              <strong>Checklist</strong>
+              <small>Will be added when the checklist files are provided.</small>
+            </button>
+            <button class="mode-card disabled" type="button" data-mode="bold" aria-disabled="true">
+              <span class="mode-icon" aria-hidden="true">BI</span>
+              <strong>Bold Items</strong>
+              <small>Prepared area for emergency memory items.</small>
+            </button>
+          </div>
+
+          <button class="primary-action" id="startComm" type="button">Start Comm practice</button>
+        </section>
+
+        <section class="trainer-view" id="trainerView" aria-label="Comm practice">
+          <div class="trainer-topline">
+            <button class="ghost-button" id="backHome" type="button">Home</button>
+            <div class="segmented" role="group" aria-label="Practice order">
+              <button class="segment active" type="button" data-order="sequence">Sequence</button>
+              <button class="segment" type="button" data-order="shuffle">Shuffle</button>
+            </div>
+          </div>
+
+          <article class="practice-card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow" id="cardCategory">Comm</p>
+                <h2 id="cardTitle">Baslik</h2>
+              </div>
+              <span id="cardCounter">1 / 1</span>
+            </div>
+
+            <div class="prompt-grid">
+              <div class="prompt-block aircraft-block">
+                <span>Aircraft</span>
+                <p id="aircraftPrompt"></p>
+              </div>
+              <div class="prompt-block situation-block">
+                <span>Situation</span>
+                <p id="situationPrompt"></p>
+              </div>
+              <div class="prompt-block atc-block">
+                <span>ATC</span>
+                <p id="atcPrompt"></p>
+              </div>
+            </div>
+
+            <label class="answer-label" for="answerInput">Pilot response</label>
+            <textarea id="answerInput" rows="5" spellcheck="false" autocomplete="off"></textarea>
+
+            <div class="actions-row">
+              <button class="secondary-action" id="showAnswer" type="button">Show answer</button>
+              <button class="primary-action compact" id="checkAnswer" type="button">Check</button>
+            </div>
+
+            <div class="feedback" id="feedback" aria-live="polite"></div>
+
+            <div class="reference-answer" id="referenceAnswer" hidden>
+              <span>Pilot line from the guide</span>
+              <p id="answerText"></p>
+            </div>
+          </article>
+
+          <div class="navigation-row">
+            <button class="secondary-action" id="prevCard" type="button">Previous</button>
+            <button class="secondary-action" id="resetCard" type="button">Clear</button>
+            <button class="primary-action compact" id="nextCard" type="button">Next</button>
+          </div>
+        </section>
+      </main>
+
+      <footer>150. Filo Can Kutay Ortaç</footer>
+    </div>
+  </body>
+</html>
