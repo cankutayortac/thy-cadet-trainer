@@ -112,8 +112,9 @@ p {
 
 h1 {
   margin-bottom: 0;
-  font-size: clamp(1.7rem, 4vw, 3rem);
-  line-height: 1;
+  max-width: 13ch;
+  font-size: clamp(1.65rem, 4vw, 2.85rem);
+  line-height: 1.02;
 }
 
 h2 {
@@ -154,6 +155,10 @@ h2 {
   margin-bottom: 18px;
 }
 
+.section-heading h2 {
+  font-size: clamp(1.28rem, 3vw, 1.85rem);
+}
+
 .mode-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -163,7 +168,7 @@ h2 {
 
 .mode-card {
   display: grid;
-  min-height: 190px;
+  min-height: 178px;
   padding: 18px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -284,7 +289,7 @@ h2 {
 }
 
 .practice-card {
-  padding: 22px;
+  padding: 20px;
   border: 1px solid #d9d9d9;
   border-top: 5px solid var(--brand);
   border-radius: 8px;
@@ -300,8 +305,8 @@ h2 {
 .prompt-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 12px;
-  margin-top: 22px;
+  gap: 10px;
+  margin-top: 18px;
 }
 
 .prompt-block,
@@ -311,7 +316,7 @@ h2 {
 }
 
 .prompt-block {
-  padding: 18px;
+  padding: 15px;
 }
 
 .aircraft-block {
@@ -427,27 +432,55 @@ textarea:focus {
 }
 
 footer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  justify-self: center;
   margin-top: 30px;
-  padding-top: 18px;
+  padding: 10px 14px;
   border-top: 1px solid var(--line);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
   color: var(--black);
   text-align: center;
   font-size: 0.88rem;
   font-weight: 850;
 }
 
+footer span {
+  color: var(--brand);
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+footer strong {
+  font-weight: 850;
+}
+
 @media (max-width: 760px) {
   .app-shell {
-    padding: 18px;
+    padding: 14px;
   }
 
   .app-header,
-  .trainer-topline,
   .card-head,
-  .actions-row,
   .navigation-row {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .app-header {
+    gap: 12px;
+    margin-bottom: 18px;
+    padding: 16px;
+  }
+
+  .trainer-topline,
+  .actions-row {
+    align-items: center;
+    flex-direction: row;
   }
 
   .app-header > div:first-child {
@@ -461,22 +494,138 @@ footer {
   }
 
   .mode-grid {
-    grid-template-columns: 1fr;
+    gap: 9px;
   }
 
   .mode-card {
-    min-height: 152px;
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    min-height: auto;
+    padding: 13px;
+    column-gap: 12px;
+    row-gap: 3px;
   }
 
-  .segmented,
+  .mode-icon {
+    grid-row: 1 / span 2;
+    width: 44px;
+    height: 44px;
+    font-size: 0.82rem;
+  }
+
+  .mode-card strong {
+    align-self: auto;
+    margin-top: 0;
+    font-size: 1.05rem;
+  }
+
+  .mode-card small {
+    margin-top: 0;
+    font-size: 0.84rem;
+  }
+
+  .segmented {
+    flex: 1;
+  }
+
   .primary-action.compact,
   .secondary-action,
   .ghost-button {
     width: 100%;
   }
 
+  .trainer-topline .ghost-button {
+    width: auto;
+    min-width: 76px;
+    padding: 0 12px;
+  }
+
   .status-pill,
   .card-head span {
     width: 100%;
+  }
+
+  h1 {
+    max-width: 11ch;
+    font-size: clamp(1.48rem, 8vw, 2.2rem);
+  }
+
+  h2 {
+    font-size: 1.18rem;
+  }
+
+  .section-heading {
+    margin-bottom: 12px;
+  }
+
+  .primary-action {
+    min-height: 42px;
+  }
+
+  .practice-card {
+    padding: 14px;
+  }
+
+  .card-head {
+    gap: 8px;
+    padding-bottom: 12px;
+  }
+
+  .card-head span {
+    padding: 7px 10px;
+  }
+
+  .prompt-grid {
+    margin-top: 12px;
+    gap: 8px;
+  }
+
+  .prompt-block {
+    padding: 11px;
+  }
+
+  .prompt-block p,
+  .reference-answer p {
+    font-size: 0.96rem;
+    line-height: 1.36;
+  }
+
+  .aircraft-block p {
+    font-size: 1.08rem;
+  }
+
+  textarea {
+    min-height: 104px;
+    padding: 11px;
+    font-size: 1rem;
+  }
+
+  .actions-row {
+    gap: 8px;
+  }
+
+  .actions-row .secondary-action,
+  .actions-row .primary-action {
+    flex: 1;
+    padding: 0 10px;
+  }
+
+  .navigation-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+
+  .navigation-row .secondary-action,
+  .navigation-row .primary-action {
+    min-width: 0;
+    padding: 0 8px;
+  }
+
+  footer {
+    margin-top: 18px;
+    padding: 8px 12px;
+    font-size: 0.78rem;
   }
 }
