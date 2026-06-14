@@ -393,6 +393,14 @@ select:focus,
   border-bottom: 1px solid var(--line);
 }
 
+.step-context {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
 .prompt-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -496,6 +504,66 @@ textarea:focus {
   gap: 10px;
 }
 
+.checkline {
+  padding: 15px;
+  border: 1px solid #202020;
+  border-radius: 8px;
+  background: #141414;
+  color: white;
+}
+
+.checkline span {
+  display: block;
+  margin-bottom: 10px;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.checkline p {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 0;
+  font-size: 1.16rem;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.checkline b {
+  color: var(--brand);
+  font-size: 1.2rem;
+}
+
+.checkline strong:last-child {
+  color: #ffffff;
+}
+
+.quiz-instruction {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 0.94rem;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.quiz-line {
+  border-color: rgba(199, 10, 12, 0.32);
+  background: #fff7f7;
+  color: var(--ink);
+}
+
+.quiz-line span {
+  color: var(--muted);
+}
+
+.quiz-line strong:last-child,
+.pending-answer {
+  color: var(--brand);
+}
+
 .note-text {
   margin: 10px 0 0;
   color: var(--muted);
@@ -513,6 +581,23 @@ textarea:focus {
 .order-drill {
   display: grid;
   gap: 12px;
+}
+
+.order-drill-head {
+  display: grid;
+  gap: 4px;
+}
+
+.order-drill-head .note-text {
+  margin-top: 0;
+}
+
+.order-chunk-label {
+  margin: 0;
+  color: var(--black);
+  font-size: 0.92rem;
+  font-weight: 950;
+  line-height: 1.35;
 }
 
 .order-targets,
@@ -567,6 +652,23 @@ textarea:focus {
   color: var(--ink);
   font-weight: 850;
   text-align: left;
+}
+
+.order-option-challenge,
+.order-option-response {
+  display: block;
+  line-height: 1.28;
+}
+
+.order-option-challenge {
+  font-weight: 950;
+}
+
+.order-option-response {
+  margin-top: 3px;
+  color: var(--brand);
+  font-size: 0.82rem;
+  font-weight: 900;
 }
 
 .order-options button:hover {
@@ -796,6 +898,24 @@ footer strong {
     line-height: 1.36;
   }
 
+  .step-context {
+    font-size: 0.78rem;
+  }
+
+  .checkline {
+    padding: 12px;
+  }
+
+  .checkline p {
+    gap: 7px;
+    font-size: 1rem;
+  }
+
+  .quiz-instruction,
+  .order-chunk-label {
+    font-size: 0.86rem;
+  }
+
   .aircraft-block p {
     font-size: 1.08rem;
   }
@@ -845,6 +965,10 @@ footer strong {
   .order-target p,
   .order-options button {
     font-size: 0.9rem;
+  }
+
+  .order-option-response {
+    font-size: 0.78rem;
   }
 
   footer {

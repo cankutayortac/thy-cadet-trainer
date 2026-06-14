@@ -516,10 +516,12 @@ const checklistGroups = [
 ];
 
 const modeLabels = {
-  review: "Review cards",
-  fill: "Fill responses",
-  order: "Order drill",
+  review: "Study lines",
+  fill: "Response quiz",
+  order: "Sequence drill",
 };
+
+const ORDER_CHUNK_SIZE = 6;
 
 const appState = {
   view: "home",
@@ -531,6 +533,7 @@ const appState = {
   checklistGroupId: "normal",
   checklistSectionId: "before-start",
   checklistIndex: 0,
+  orderChunkStart: 0,
   orderSelected: [],
   orderOptions: [],
 };
@@ -585,6 +588,7 @@ function bindElements() {
     checklistPracticeTitle: document.querySelector("#checklistPracticeTitle"),
     checklistGroupLabel: document.querySelector("#checklistGroupLabel"),
     checklistStepTitle: document.querySelector("#checklistStepTitle"),
+    checklistStepContext: document.querySelector("#checklistStepContext"),
     checklistCounter: document.querySelector("#checklistCounter"),
     checklistReviewPanel: document.querySelector("#checklistReviewPanel"),
     checklistChallenge: document.querySelector("#checklistChallenge"),
@@ -601,6 +605,7 @@ function bindElements() {
     orderDrillPanel: document.querySelector("#orderDrillPanel"),
     orderTargets: document.querySelector("#orderTargets"),
     orderOptions: document.querySelector("#orderOptions"),
+    orderChunkLabel: document.querySelector("#orderChunkLabel"),
     orderFeedback: document.querySelector("#orderFeedback"),
     resetOrderDrill: document.querySelector("#resetOrderDrill"),
     prevChecklistStep: document.querySelector("#prevChecklistStep"),
@@ -696,6 +701,7 @@ function showChecklistPractice(sectionId) {
   appState.view = "checklistPractice";
   appState.checklistSectionId = sectionId;
   appState.checklistIndex = 0;
+  appState.orderChunkStart = 0;
   resetOrderState();
   setActiveView("checklistPractice");
   renderChecklistPractice();
@@ -831,30 +837,38 @@ function renderChecklistPractice() {
   const mode = appState.checklistMode;
   const items = sectionData.items;
   const currentItem = items[appState.checklistIndex] || items[0];
+  const orderBounds = getOrderChunkBounds(sectionData);
 
   if (appState.view === "checklistPractice") {
     els.progressPill.textContent = mode === "order"
-      ? `${appState.orderSelected.length} / ${items.length}`
+      ? `${Math.min(orderBounds.start + appState.orderSelected.length, items.length)} / ${items.length}`
       : `${appState.checklistIndex + 1} / ${items.length}`;
   }
   els.checklistPracticeMode.textContent = modeLabels[mode];
   els.checklistPracticeTitle.textContent = sectionData.title;
   els.checklistGroupLabel.textContent = group.name;
   els.checklistCounter.textContent = mode === "order"
-    ? `${appState.orderSelected.length} / ${items.length}`
+    ? `Set ${orderBounds.start + 1}-${orderBounds.end} / ${items.length}`
     : `${appState.checklistIndex + 1} / ${items.length}`;
+  els.checklistStepContext.textContent = mode === "order"
+    ? `${group.name} · ${sectionData.title} · Items ${orderBounds.start + 1}-${orderBounds.end} of ${items.length}`
+    : getChecklistContext(group, sectionData, appState.checklistIndex);
 
   els.checklistReviewPanel.hidden = mode !== "review";
   els.checklistFillPanel.hidden = mode !== "fill";
   els.orderDrillPanel.hidden = mode !== "order";
-  els.prevChecklistStep.disabled = mode === "order" || appState.checklistIndex === 0;
-  els.nextChecklistStep.disabled = mode === "order" || appState.checklistIndex === items.length - 1;
+  els.prevChecklistStep.textContent = mode === "order" ? "Prev set" : "Previous";
+  els.nextChecklistStep.textContent = mode === "order" ? "Next set" : "Next";
+  els.resetChecklistStep.textContent = mode === "order" ? "Reset set" : "Reset";
+  els.prevChecklistStep.disabled = mode === "order" ? orderBounds.start === 0 : appState.checklistIndex === 0;
+  els.nextChecklistStep.disabled = mode === "order" ? orderBounds.end === items.length : appState.checklistIndex === items.length - 1;
 
   if (mode === "review") {
     els.checklistStepTitle.textContent = currentItem.challenge;
     els.checklistChallenge.textContent = currentItem.challenge;
     els.checklistResponse.textContent = currentItem.response;
     els.checklistNote.textContent = currentItem.note || "";
+    els.checklistNote.hidden = !currentItem.note;
     return;
   }
 
@@ -871,6 +885,11 @@ function renderChecklistPractice() {
 }
 
 function moveChecklistStep(direction) {
+  if (appState.checklistMode === "order") {
+    moveOrderChunk(direction);
+    return;
+  }
+
   const items = getCurrentSection().items;
   const nextIndex = appState.checklistIndex + direction;
   if (nextIndex < 0 || nextIndex >= items.length) return;
@@ -902,39 +921,24 @@ function revealChecklistAnswer() {
 
 function checkChecklistAnswer() {
   const itemData = getCurrentSection().items[appState.checklistIndex];
-  const typed = normalize(els.checklistAnswerInput.value);
-  const expected = normalize(itemData.response);
-
-  if (!typed) {
-    showFeedback(els.checklistFeedback, "Type the response first.", "miss");
-    return;
-  }
-
-  const score = similarity(typed, expected);
-  if (score >= 0.88 || expected.includes(typed) || typed.includes(expected)) {
-    showFeedback(els.checklistFeedback, "Correct. Keep the challenge-response rhythm.", "good");
-    return;
-  }
-
-  if (score >= 0.62) {
-    showFeedback(els.checklistFeedback, "Close. Check the exact action word and any numbers/positions.", "near");
-    return;
-  }
-
-  showFeedback(els.checklistFeedback, "Try again, then show the answer if needed.", "miss");
+  const result = analyzeChecklistAnswer(els.checklistAnswerInput.value, itemData);
+  showFeedback(els.checklistFeedback, result.message, result.type);
 }
 
 function renderOrderDrill() {
   const sectionData = getCurrentSection();
-  if (!appState.orderOptions.length) resetOrderState();
+  const bounds = getOrderChunkBounds(sectionData);
+  ensureOrderStateMatchesChunk(bounds.items);
   els.checklistStepTitle.textContent = sectionData.title;
-  els.orderTargets.innerHTML = sectionData.items
+  els.orderChunkLabel.textContent = `${sectionData.title} · Items ${bounds.start + 1}-${bounds.end} of ${bounds.total}`;
+  els.orderTargets.innerHTML = bounds.items
     .map((itemData, index) => {
       const selected = appState.orderSelected[index];
+      const absoluteIndex = bounds.start + index + 1;
       return `
         <div class="order-target ${selected ? "filled" : ""}">
-          <span>${index + 1}</span>
-          <p>${selected ? escapeHtml(selected.challenge) : "..."}</p>
+          <span>${absoluteIndex}</span>
+          <p>${selected ? escapeHtml(formatChecklistLine(selected)) : "..."}</p>
         </div>
       `;
     })
@@ -943,7 +947,12 @@ function renderOrderDrill() {
     .filter((option) => !appState.orderSelected.includes(option))
     .map((option) => {
       const optionIndex = sectionData.items.indexOf(option);
-      return `<button type="button" data-order-option-index="${optionIndex}">${escapeHtml(option.challenge)}</button>`;
+      return `
+        <button type="button" data-order-option-index="${optionIndex}">
+          <span class="order-option-challenge">${escapeHtml(option.challenge)}</span>
+          <span class="order-option-response">${escapeHtml(option.response)}</span>
+        </button>
+      `;
     })
     .join("");
   els.orderOptions.querySelectorAll("[data-order-option-index]").forEach((button) => {
@@ -953,16 +962,19 @@ function renderOrderDrill() {
 }
 
 function chooseOrderOption(option) {
-  const items = getCurrentSection().items;
-  const expected = items[appState.orderSelected.length];
+  const bounds = getOrderChunkBounds();
+  const expected = bounds.items[appState.orderSelected.length];
   if (option !== expected) {
-    showFeedback(els.orderFeedback, `Not yet. The next item should be "${expected.challenge}". Reset and try the flow again.`, "miss");
+    showFeedback(els.orderFeedback, `Not yet. The next line should be: ${formatChecklistLine(expected)}.`, "miss");
     return;
   }
 
   appState.orderSelected.push(option);
-  if (appState.orderSelected.length === items.length) {
-    showFeedback(els.orderFeedback, "Complete. You have the sequence in order.", "good");
+  if (appState.orderSelected.length === bounds.items.length) {
+    const message = bounds.end === bounds.total
+      ? "Section complete. You have the sequence in order."
+      : "Set complete. Move to the next set when ready.";
+    showFeedback(els.orderFeedback, message, "good");
   } else {
     showFeedback(els.orderFeedback, "Good. Continue with the next item.", "good");
   }
@@ -977,9 +989,54 @@ function resetOrderDrill() {
 }
 
 function resetOrderState() {
-  const items = getCurrentSection().items;
+  const { items } = getOrderChunkBounds();
   appState.orderSelected = [];
   appState.orderOptions = shuffle(items);
+}
+
+function getChecklistContext(group, sectionData, itemIndex) {
+  return `${group.name} · ${sectionData.title} · Item ${itemIndex + 1} of ${sectionData.items.length}`;
+}
+
+function formatChecklistLine(itemData) {
+  return `${itemData.challenge} → ${itemData.response}`;
+}
+
+function getOrderChunkBounds(sectionData = getCurrentSection()) {
+  const total = sectionData.items.length;
+  const lastStart = getLastOrderChunkStart(sectionData.items);
+  const start = Math.min(Math.max(appState.orderChunkStart, 0), lastStart);
+  const end = Math.min(start + ORDER_CHUNK_SIZE, total);
+  return {
+    start,
+    end,
+    total,
+    items: sectionData.items.slice(start, end),
+  };
+}
+
+function getLastOrderChunkStart(items) {
+  if (items.length <= ORDER_CHUNK_SIZE) return 0;
+  return Math.floor((items.length - 1) / ORDER_CHUNK_SIZE) * ORDER_CHUNK_SIZE;
+}
+
+function moveOrderChunk(direction) {
+  const items = getCurrentSection().items;
+  const lastStart = getLastOrderChunkStart(items);
+  const nextStart = Math.min(Math.max(appState.orderChunkStart + direction * ORDER_CHUNK_SIZE, 0), lastStart);
+  if (nextStart === appState.orderChunkStart) return;
+  appState.orderChunkStart = nextStart;
+  resetOrderState();
+  els.orderFeedback.textContent = "";
+  els.orderFeedback.className = "feedback";
+  renderChecklistPractice();
+}
+
+function ensureOrderStateMatchesChunk(chunkItems) {
+  const hasWrongOptions = appState.orderOptions.length !== chunkItems.length
+    || appState.orderOptions.some((option) => !chunkItems.includes(option))
+    || appState.orderSelected.some((option) => !chunkItems.includes(option));
+  if (hasWrongOptions) resetOrderState();
 }
 
 function getCurrentGroup() {
@@ -996,6 +1053,111 @@ function getChecklistItemCount(group = null) {
   return groups.reduce((total, groupData) => {
     return total + groupData.sections.reduce((sectionTotal, sectionData) => sectionTotal + sectionData.items.length, 0);
   }, 0);
+}
+
+function analyzeChecklistAnswer(value, itemData) {
+  const typed = normalizeChecklistResponse(value);
+  const expected = normalizeChecklistResponse(itemData.response);
+  const challenge = normalizeChecklistResponse(itemData.challenge);
+
+  if (!typed) {
+    return { type: "miss", message: "Type the response/action first." };
+  }
+
+  if (challenge && (typed === challenge || typed.includes(challenge))) {
+    return {
+      type: "miss",
+      message: `Try again. You included the challenge; this field needs only the response/action: ${itemData.response}.`,
+    };
+  }
+
+  const acceptedAnswers = getChecklistAcceptedResponses(itemData).map(normalizeChecklistResponse).filter(Boolean);
+  const compactTyped = compactChecklistAnswer(typed);
+  if (acceptedAnswers.some((answer) => typed === answer || compactTyped === compactChecklistAnswer(answer))) {
+    return { type: "good", message: "Correct. Keep the challenge-response rhythm." };
+  }
+
+  const expectedTokens = getImportantResponseTokens(expected);
+  const typedTokens = new Set(getImportantResponseTokens(typed));
+  const missingTokens = expectedTokens.filter((token) => !typedTokens.has(token));
+  const coverage = expectedTokens.length
+    ? (expectedTokens.length - missingTokens.length) / expectedTokens.length
+    : 0;
+
+  if (expectedTokens.length && missingTokens.length === 0) {
+    return {
+      type: "good",
+      message: `Correct. Guide response/action: ${itemData.response}.`,
+    };
+  }
+
+  const bestScore = Math.max(...acceptedAnswers.map((answer) => similarity(typed, answer)), 0);
+  if (coverage >= 0.5 || bestScore >= 0.72) {
+    const missingText = missingTokens.length ? ` Missing or unclear: ${formatMissingTokens(missingTokens)}.` : "";
+    return {
+      type: "near",
+      message: `Close.${missingText} Expected response/action: ${itemData.response}. Try once more.`,
+    };
+  }
+
+  return {
+    type: "miss",
+    message: `Try again. Read the challenge, then answer with the guide response/action only.`,
+  };
+}
+
+function getChecklistAcceptedResponses(itemData) {
+  const answers = new Set([itemData.response]);
+  const response = itemData.response.trim();
+
+  response.split("/").map((part) => part.trim()).filter(Boolean).forEach((part) => answers.add(part));
+
+  if (/^[A-Za-zÇĞİÖŞÜçğıöşü\s]+ or [A-Za-zÇĞİÖŞÜçğıöşü\s]+$/.test(response)) {
+    response.split(/\s+or\s+/i).map((part) => part.trim()).filter(Boolean).forEach((part) => answers.add(part));
+  }
+
+  answers.add(response.replace(/\band\b/gi, " ").replace(/\s+/g, " ").trim());
+  if (/^set to\s+/i.test(response)) {
+    answers.add(response.replace(/^set to\s+/i, "").trim());
+  }
+
+  return [...answers].filter(Boolean);
+}
+
+function getImportantResponseTokens(value) {
+  const optionalWords = new Set(["a", "an", "and", "as", "for", "of", "or", "the", "then", "to"]);
+  return normalizeChecklistResponse(value)
+    .split(" ")
+    .filter((token) => token && !optionalWords.has(token))
+    .filter((token) => /\d/.test(token) || token.length > 1);
+}
+
+function compactChecklistAnswer(value) {
+  return getImportantResponseTokens(value).join(" ");
+}
+
+function normalizeChecklistResponse(value) {
+  return normalize(value)
+    .replace(/\bchecked\b/g, "check")
+    .replace(/\bchecking\b/g, "check")
+    .replace(/\bsecured\b/g, "secure")
+    .replace(/\bsecurely\b/g, "secure")
+    .replace(/\blocked\b/g, "lock")
+    .replace(/\badjusted\b/g, "adjust")
+    .replace(/\breleased\b/g, "release")
+    .replace(/\bremoved\b/g, "remove")
+    .replace(/\binstalled\b/g, "install")
+    .replace(/\bselected\b/g, "select")
+    .replace(/\bsecs\b/g, "seconds")
+    .replace(/\bsec\b/g, "seconds")
+    .replace(/\bdegrees\b/g, "")
+    .replace(/\bdegree\b/g, "")
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+function formatMissingTokens(tokens) {
+  return tokens.map((token) => token.toUpperCase()).join(", ");
 }
 
 function getAcceptedCommAnswers(card) {

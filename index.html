@@ -38,7 +38,7 @@
             <button class="mode-card" type="button" data-mode="checklist">
               <span class="mode-icon" aria-hidden="true">CL</span>
               <strong>Checklist</strong>
-              <small>Review, fill responses, and drill checklist order.</small>
+              <small>Study exact lines, quiz responses, and short sequence sets.</small>
             </button>
             <button class="mode-card disabled" type="button" data-mode="bold" aria-disabled="true" disabled>
               <span class="mode-icon" aria-hidden="true">BI</span>
@@ -119,9 +119,9 @@
             <label>
               <span>Practice type</span>
               <select id="checklistModeSelect">
-                <option value="review">Review cards</option>
-                <option value="fill">Fill responses</option>
-                <option value="order">Order drill</option>
+                <option value="review">Study lines</option>
+                <option value="fill">Response quiz</option>
+                <option value="order">Sequence drill</option>
               </select>
             </label>
             <label>
@@ -147,46 +147,55 @@
               <div>
                 <p class="eyebrow" id="checklistGroupLabel">Normal Procedures</p>
                 <h2 id="checklistStepTitle">Step</h2>
+                <p class="step-context" id="checklistStepContext"></p>
               </div>
               <span id="checklistCounter">1 / 1</span>
             </div>
 
             <div class="checklist-review" id="checklistReviewPanel">
-              <div class="prompt-block aircraft-block">
-                <span>Challenge</span>
-                <p id="checklistChallenge"></p>
-              </div>
-              <div class="prompt-block situation-block">
-                <span>Response</span>
-                <p id="checklistResponse"></p>
+              <div class="checkline">
+                <span>Checklist line</span>
+                <p>
+                  <strong id="checklistChallenge"></strong>
+                  <b aria-hidden="true">→</b>
+                  <strong id="checklistResponse"></strong>
+                </p>
               </div>
               <p class="note-text" id="checklistNote"></p>
             </div>
 
             <div class="checklist-fill" id="checklistFillPanel" hidden>
-              <div class="prompt-block aircraft-block">
+              <p class="quiz-instruction">Type only the response/action for this checklist challenge.</p>
+              <div class="checkline quiz-line">
                 <span>Challenge</span>
-                <p id="fillChallenge"></p>
+                <p>
+                  <strong id="fillChallenge"></strong>
+                  <b aria-hidden="true">→</b>
+                  <strong class="pending-answer">?</strong>
+                </p>
               </div>
-              <label class="answer-label" for="checklistAnswerInput">Response</label>
-              <input id="checklistAnswerInput" class="answer-input" autocomplete="off" spellcheck="false" />
+              <label class="answer-label" for="checklistAnswerInput">Expected response/action</label>
+              <input id="checklistAnswerInput" class="answer-input" autocomplete="off" spellcheck="false" placeholder="Example: COMPLETE, CHECK, SET BOTH" />
               <div class="actions-row">
                 <button class="secondary-action" id="showChecklistAnswer" type="button">Show answer</button>
                 <button class="primary-action compact" id="checkChecklistAnswer" type="button">Check</button>
               </div>
               <div class="feedback" id="checklistFeedback" aria-live="polite"></div>
               <div class="reference-answer" id="checklistReferenceAnswer" hidden>
-                <span>Guide response</span>
+                <span>Expected response/action</span>
                 <p id="checklistAnswerText"></p>
               </div>
             </div>
 
             <div class="order-drill" id="orderDrillPanel" hidden>
-              <p class="note-text">Tap the checklist items in the correct order.</p>
+              <div class="order-drill-head">
+                <p class="order-chunk-label" id="orderChunkLabel"></p>
+                <p class="note-text">Work one small set at a time. Tap the next full checklist line.</p>
+              </div>
               <div class="order-targets" id="orderTargets"></div>
               <div class="order-options" id="orderOptions"></div>
               <div class="feedback" id="orderFeedback" aria-live="polite"></div>
-              <button class="secondary-action" id="resetOrderDrill" type="button">Reset order</button>
+              <button class="secondary-action" id="resetOrderDrill" type="button">Reset set</button>
             </div>
           </article>
 
