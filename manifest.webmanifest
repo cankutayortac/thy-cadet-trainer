@@ -1,0 +1,16 @@
+{
+  "name": "THY Cadet Trainer",
+  "short_name": "Cadet Trainer",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#c70a0c",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
